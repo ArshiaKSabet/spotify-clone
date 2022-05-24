@@ -57,7 +57,7 @@ export default function Player() {
           }}
         >
           <Avatar
-            src="/Justin-Bieber.png"
+            src="/images/2pac.png"
             alt="logo"
             variant="square"
             sx={{ width: 56, height: 56, marginRight: 2 }}
@@ -65,7 +65,7 @@ export default function Player() {
           <Box>
             <Typography sx={{ color: "white", fontSize: 14 }}>Holy</Typography>
             <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-              Justin Bieber
+              2Pac
             </Typography>
           </Box>
         </Grid>

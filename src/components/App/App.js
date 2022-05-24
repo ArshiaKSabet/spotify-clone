@@ -11,14 +11,14 @@ import Login from "../Login/Login";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import SpotifyWebApi from "spotify-web-api-node";
-import { fetchUser } from "../../store/actions";
+import { fetchUser, fetchPlaylist } from "../../store/actions";
 
 const mockData = [
-  { name: "Rock", playlistId: 123, image: "/images/2pac.jpg" },
-  { name: "Pop", playlistId: 646, image: "/images/2pac.jpg" },
-  { name: "Hip hop", playlistId: 834, image: "/images/2pac.jpg" },
-  { name: "X-mas", playlistId: 5503, image: "/images/2pac.jpg" },
-  { name: "Code life", playlistId: 4832, image: "/images/2pac.jpg" },
+  { name: "Rock", playlistId: 123, image: "/images/2pac.png" },
+  { name: "Pop", playlistId: 646, image: "/images/2pac.png" },
+  { name: "Hip hop", playlistId: 834, image: "/images/2pac.png" },
+  { name: "X-mas", playlistId: 5503, image: "/images/2pac.png" },
+  { name: "Code life", playlistId: 4832, image: "/images/2pac.png" },
 ];
 
 const songs = [
@@ -94,7 +94,7 @@ const songs = [
   },
 ];
 
-function App({ token, fetchUser }) {
+function App({ token, fetchUser, fetchPlaylist }) {
   const spotifyApi = new SpotifyWebApi();
 
   useEffect(() => {
@@ -102,6 +102,7 @@ function App({ token, fetchUser }) {
 
     const getData = async () => {
       fetchUser(spotifyApi);
+      fetchPlaylist(spotifyApi);
     };
 
     if (token) getData();
@@ -174,7 +175,10 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return { fetchUser: (api) => dispatch(fetchUser(api)) };
+  return {
+    fetchUser: (api) => dispatch(fetchUser(api)),
+    fetchPlaylist: (api) => dispatch(fetchPlaylist(api)),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
