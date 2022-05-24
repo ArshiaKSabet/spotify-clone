@@ -1,13 +1,180 @@
-import { Typography, Button } from "@mui/material";
 import "./App.css";
+import SideNav from "../SideNav/SideNav.js";
+import Playlist from "../Playlist/Playlist.js";
+import { Box } from "@mui/material";
+import MobileNav from "../MobileNav/MobileNav";
+import Player from "../Player/Player";
+import { Routes, Route } from "react-router-dom";
+import Library from "../Library/Library";
+import Home from "../Home/Home";
+import Login from "../Login/Login";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import SpotifyWebApi from "spotify-web-api-node";
+import { fetchUser } from "../../store/actions";
 
-function App() {
+const mockData = [
+  { name: "Rock", playlistId: 123, image: "/images/2pac.jpg" },
+  { name: "Pop", playlistId: 646, image: "/images/2pac.jpg" },
+  { name: "Hip hop", playlistId: 834, image: "/images/2pac.jpg" },
+  { name: "X-mas", playlistId: 5503, image: "/images/2pac.jpg" },
+  { name: "Code life", playlistId: 4832, image: "/images/2pac.jpg" },
+];
+
+const songs = [
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+  {
+    image: "/images/2pac.jpg",
+    title: "Holy",
+    artist: "2pac",
+    album: "No clue",
+    duration: 180,
+  },
+];
+
+function App({ token, fetchUser }) {
+  const spotifyApi = new SpotifyWebApi();
+
+  useEffect(() => {
+    spotifyApi.setAccessToken(token);
+
+    const getData = async () => {
+      fetchUser(spotifyApi);
+    };
+
+    if (token) getData();
+  }, [token, fetchUser]);
+
   return (
-    <div className="App">
-      <Typography sx={{ color: "primary.main" }}>Spotify Clone</Typography>
-      <Button variant="contained">Click me</Button>
-    </div>
+    <Box className="App">
+      {token ? (
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box sx={{ flex: 1, overflowY: "auto", display: "flex" }}>
+            <SideNav playlists={mockData} />
+            <Routes>
+              <Route
+                path="/playlist/:id"
+                element={<Playlist songs={songs} />}
+              />
+              <Route
+                path="/search"
+                element={<h1 style={{ color: "white" }}>Search</h1>}
+              />
+              <Route
+                path="/library"
+                element={<Library playlists={mockData} loading={false} />}
+              />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </Box>
+          <Player />
+          <MobileNav />
+          <Banner />
+        </Box>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
+      )}
+    </Box>
   );
 }
 
-export default App;
+const Banner = () => {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        height: 25,
+        bgcolor: "primary.main",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        fontSize: 14,
+        boxSizing: "border-box",
+        paddingRight: "10px",
+      }}
+    >
+      Made with love by Techover Academy
+    </Box>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return { token: state.auth.token };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return { fetchUser: (api) => dispatch(fetchUser(api)) };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
