@@ -2,111 +2,65 @@ import "./App.css";
 import SideNav from "../SideNav/SideNav.js";
 import Playlist from "../Playlist/Playlist.js";
 import { Box } from "@mui/material";
-import MobileNav from "../MobileNav/MobileNav";
-import Player from "../Player/Player";
+import MobilNav from "../MobileNav/MobileNav";
 import { Routes, Route } from "react-router-dom";
+import Player from "../Player/Player";
 import Library from "../Library/Library";
 import Home from "../Home/Home";
 import Login from "../Login/Login";
-import { useEffect } from "react";
+import Search from "../Search/Search";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import SpotifyWebApi from "spotify-web-api-node";
-import { fetchUser, fetchPlaylist } from "../../store/actions";
+import { fetchUser, fetchPlaylist, addDevice } from "../../store/actions/index";
 
-const mockData = [
-  { name: "Rock", playlistId: 123, image: "/images/2pac.png" },
-  { name: "Pop", playlistId: 646, image: "/images/2pac.png" },
-  { name: "Hip hop", playlistId: 834, image: "/images/2pac.png" },
-  { name: "X-mas", playlistId: 5503, image: "/images/2pac.png" },
-  { name: "Code life", playlistId: 4832, image: "/images/2pac.png" },
-];
-
-const songs = [
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-  {
-    image: "/images/2pac.jpg",
-    title: "Holy",
-    artist: "2pac",
-    album: "No clue",
-    duration: 180,
-  },
-];
-
-function App({ token, fetchUser, fetchPlaylist }) {
-  const spotifyApi = new SpotifyWebApi();
-
+function App({ token, fetchUser, fetchPlaylist, spotifyApi, addDevice }) {
+  const [playerIsReady, setPlayerIsReady] = useState(false);
   useEffect(() => {
-    spotifyApi.setAccessToken(token);
-
     const getData = async () => {
       fetchUser(spotifyApi);
       fetchPlaylist(spotifyApi);
     };
 
-    if (token) getData();
+    if (token) {
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        setupSpotifyConnect(token, addDevice, spotifyApi);
+      };
+      getData();
+    }
   }, [token, fetchUser]);
+
+  const setupSpotifyConnect = (token, addDevice) => {
+    const player = new window.Spotify.Player({
+      name: "Techover Spotify",
+      getOAuthToken: (cb) => {
+        cb(token);
+      },
+      volume: 0.5,
+    });
+
+    player.addListener("ready", ({ device_id }) => {
+      addDevice(device_id);
+      setPlayerIsReady(true);
+    });
+
+    player.addListener("not_ready", ({ device_id }) => {
+      console.log("Device ID has gone offline", device_id);
+    });
+
+    player.addListener("initialization_error", ({ message }) => {
+      console.error(message);
+    });
+
+    player.addListener("authentication_error", ({ message }) => {
+      console.error(message);
+    });
+
+    player.addListener("account_error", ({ message }) => {
+      console.error(message);
+    });
+
+    player.connect();
+  };
 
   return (
     <Box className="App">
@@ -120,30 +74,27 @@ function App({ token, fetchUser, fetchPlaylist }) {
           }}
         >
           <Box sx={{ flex: 1, overflowY: "auto", display: "flex" }}>
-            <SideNav playlists={mockData} />
+            <SideNav />
             <Routes>
               <Route
                 path="/playlist/:id"
-                element={<Playlist songs={songs} />}
+                element={<Playlist spotifyApi={spotifyApi} />}
               />
               <Route
                 path="/search"
-                element={<h1 style={{ color: "white" }}>Search</h1>}
+                element={<Search spotifyApi={spotifyApi} />}
               />
-              <Route
-                path="/library"
-                element={<Library playlists={mockData} loading={false} />}
-              />
+              <Route path="/library" element={<Library />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </Box>
-          <Player />
-          <MobileNav />
+          {playerIsReady ? <Player spotifyApi={spotifyApi} /> : null}
+          <MobilNav />
           <Banner />
         </Box>
       ) : (
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="*" element={<Login />} />
         </Routes>
       )}
     </Box>
@@ -165,7 +116,7 @@ const Banner = () => {
         paddingRight: "10px",
       }}
     >
-      Made with love by Techover Academy
+      Made with by AK-DEVELOPMENT
     </Box>
   );
 };
@@ -174,11 +125,12 @@ const mapStateToProps = (state) => {
   return { token: state.auth.token };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatch = (dispatch) => {
   return {
     fetchUser: (api) => dispatch(fetchUser(api)),
     fetchPlaylist: (api) => dispatch(fetchPlaylist(api)),
+    addDevice: (device_id) => dispatch(addDevice(device_id)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatch)(App);

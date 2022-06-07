@@ -1,11 +1,38 @@
 import React from "react";
-import { Avatar, Box, Typography, Grid, Divider } from "@mui/material";
+import { Box, Grid, Divider } from "@mui/material";
 import { AccessTimeRounded } from "@mui/icons-material";
 import SongRow from "../SongRow/SongRow";
 
-const SongTable = ({ songs, i }) => {
-  const renderSongs = () =>
-    songs.map((song, i) => <SongRow {...song} key={i} i={i} />);
+const SongTable = ({ songs, loading, spotifyApi }) => {
+  const renderSongs = () => {
+    if (loading)
+      return [1, 2, 3, 4, 5, 6].map((e, i) => (
+        <SongRow loading={true} key={i} i={i} />
+      ));
+
+    return songs.map((song, i) => {
+      const albumName = song.album.name;
+      const images = song.album.images;
+      const title = song.name;
+      const artist = song.artists[0].name;
+      const duration = song.duration_ms / 1000;
+
+      return (
+        <SongRow
+          album={albumName}
+          images={images}
+          title={title}
+          artist={artist}
+          duration={duration}
+          key={i}
+          i={i}
+          position={song.position}
+          contextUri={song.contextUri}
+          spotifyApi={spotifyApi}
+        />
+      );
+    });
+  };
 
   return (
     <Box
@@ -19,7 +46,6 @@ const SongTable = ({ songs, i }) => {
     >
       <Grid
         container
-        key={i}
         px={2}
         py={1}
         sx={{ width: "100%", color: "text.secondary", fontSize: 14 }}
@@ -32,8 +58,8 @@ const SongTable = ({ songs, i }) => {
         </Grid>
         <Grid
           item
+          xs={3}
           sx={{
-            flex: 1,
             display: { xs: "none", md: "flex" },
             alignItems: "center",
           }}
@@ -42,8 +68,9 @@ const SongTable = ({ songs, i }) => {
         </Grid>
         <Grid
           item
+          xs={3}
           sx={{
-            display: { xs: "none", md: "flex" },
+            display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
           }}

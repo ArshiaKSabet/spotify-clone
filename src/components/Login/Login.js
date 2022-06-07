@@ -14,10 +14,10 @@ const Login = () => {
       }}
     >
       <img
-        src="/images/SpotifyLogo.png"
-        alt="Techover spotify"
+        src="../images/SpotifyLogo.png"
+        alt="Spotify Clone"
         style={{ marginBottom: 300, width: "70%", maxWidth: 500 }}
-      ></img>
+      />
       <Button href={accessUrl} color="primary" variant="contained" size="large">
         Login to Spotify
       </Button>

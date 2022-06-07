@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import { VolumeDown, VolumeUp, VolumeOff } from "@mui/icons-material";
 import { Grid, Stack, Slider } from "@mui/material";
 
-export default function VolumeController({ sliderStyle }) {
-  const defaultVolume = 40;
+const VolumeController = ({ sliderStyle, spotifyApi }) => {
+  const defaultVolume = 40; // deafault value
   const [volume, setVolume] = useState(defaultVolume);
-  const handleVolumeChange = (e, v) => {
-    setVolume(v);
+
+  const handleVolumeChange = async (e, v) => {
+    try {
+      await spotifyApi.setVolume(v);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   return (
     <Grid
       item
@@ -35,12 +41,14 @@ export default function VolumeController({ sliderStyle }) {
           min={0}
           max={100}
           step={1}
-          aria-label="Volume"
           value={volume}
-          onChange={handleVolumeChange}
           sx={sliderStyle}
+          onChange={(e, v) => setVolume(v)}
+          onChangeCommitted={async (e, v) => handleVolumeChange(e, v)}
         />
       </Stack>
     </Grid>
   );
-}
+};
+
+export default VolumeController;

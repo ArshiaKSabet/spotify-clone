@@ -1,24 +1,29 @@
-import { Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Skeleton } from "@mui/material";
+import { NavLink } from "react-router-dom";
 
-const NavPlaylist = ({ name, id }) => {
-  const navigate = useNavigate();
+const NavPlaylist = ({ name, id, loading }) => {
   return (
-    <Box
-      onClick={() => {
-        navigate(`/playlist/${id}`);
-      }}
-      px={3}
-      py={1}
-      sx={{
-        color: "text.secondary",
-        cursor: "pointer",
-        fontSize: 14,
-        "&:hover": { color: "text.primary" },
-      }}
+    <NavLink
+      to={loading ? "" : `/playlist/${id}`}
+      style={{ textDecoration: "none" }}
     >
-      {name}
-    </Box>
+      <Box
+        px={3}
+        py={1}
+        sx={{
+          color: "text.secondary",
+          cursor: "pointer",
+          fontsize: 4,
+          "&:hover": { color: "text.primary" },
+        }}
+      >
+        {loading ? (
+          <Skeleton variant={"text"} height={"14px"} width={"70px"} />
+        ) : (
+          name
+        )}
+      </Box>
+    </NavLink>
   );
 };
 

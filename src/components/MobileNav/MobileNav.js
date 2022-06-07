@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Box, BottomNavigation, BottomNavigationAction } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import SearchIcon from "@mui/icons-material/Search";
-import ListIcon from "@mui/icons-material/List";
+import { Home, Search, List } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const MobileNav = () => {
@@ -17,31 +15,27 @@ const MobileNav = () => {
         sx={{ bgcolor: "background.paper" }}
         showLabels
         value={value}
-        onChange={(event, newValue) => setValue(newValue)}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+        }}
       >
         <BottomNavigationAction
           sx={styledNav}
           label="Home"
-          icon={<HomeIcon />}
-          onClick={() => {
-            navigate("/");
-          }}
+          icon={<Home />}
+          onClick={() => navigate("/")}
         />
         <BottomNavigationAction
           sx={styledNav}
           label="Sök"
-          icon={<SearchIcon />}
-          onClick={() => {
-            navigate("/search");
-          }}
+          icon={<Search />}
+          onClick={() => navigate("/search")}
         />
         <BottomNavigationAction
           sx={styledNav}
-          lavel="Ditt Bibliotek"
-          icon={<ListIcon />}
-          onClick={() => {
-            navigate("/library");
-          }}
+          label="Ditt bibliotek"
+          icon={<List />}
+          onClick={() => navigate("/library")}
         />
       </BottomNavigation>
     </Box>
