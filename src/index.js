@@ -12,7 +12,7 @@ import SpotifyWebApi from "spotify-web-api-node";
 const spotifyApi = new SpotifyWebApi({
   clientId: "47b69eb399e840fa8202a3316e1bd891",
   clientSecret: "e2378a61c66844758c042e6f206c92ca",
-  redirectUri: "http://localhost:3000/",
+  redirectUri: "https://spotify-clone-pink-one.vercel.app/",
 });
 const store = configureStore(spotifyApi);
 

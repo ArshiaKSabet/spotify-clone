@@ -1,7 +1,7 @@
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 export const clientId = "47b69eb399e840fa8202a3316e1bd891";
 export const liveURL = "https://techover-spotify.herokuapp.com/";
-export const devURL = "http://localhost:3000/";
+export const devURL = "https://spotify-clone-pink-one.vercel.app/";
 export const redirectURL = devURL;
 export const scopes = [
   "ugc-image-upload",
